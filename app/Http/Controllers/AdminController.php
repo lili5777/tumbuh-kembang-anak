@@ -42,15 +42,39 @@ class AdminController extends Controller
     {
         $data = $request->validate([
             'nama' => 'required|string|max:255',
-            'usia_id' => 'required|exists:usia,id',
+            'usia_id' => 'required|exists:usias,id',
             'tb' => 'required|numeric',
             'bb' => 'required|numeric',
             'lk' => 'required|numeric',
-            'motorik_id' => 'required|exists:motorik,id',
-            'bicara_id' => 'required|exists:bicara,id',
+            'motorik_id' => 'required|exists:kemampuans,id',
+            'bicara_id' => 'required|exists:kemampuans,id',
         ]);
 
         Anak::create($data);
         return redirect()->route('admin.dataanak')->with('success', 'Data anak berhasil ditambahkan.');
+    }
+
+    public function editdataanak(Request $request, $id)
+    {
+        $anak = Anak::findOrFail($id);
+        $data = $request->validate([
+            'nama' => 'required|string|max:255',
+            'usia_id' => 'required|exists:usias,id',
+            'tb' => 'required|numeric',
+            'bb' => 'required|numeric',
+            'lk' => 'required|numeric',
+            'motorik_id' => 'required|exists:kemampuans,id',
+            'bicara_id' => 'required|exists:kemampuans,id',
+        ]);
+
+        $anak->update($data);
+        return redirect()->route('admin.dataanak')->with('success', 'Data anak berhasil diperbarui.');
+    }
+
+    public function hapusdataanak($id)
+    {
+        $anak = Anak::findOrFail($id);
+        $anak->delete();
+        return redirect()->route('admin.dataanak')->with('success', 'Data anak berhasil dihapus.');
     }
 }
