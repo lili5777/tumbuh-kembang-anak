@@ -18,3 +18,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+Route::get('/admin/data-anak', [AdminController::class, 'dataanak'])->name('admin.dataanak');
