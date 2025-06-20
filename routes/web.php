@@ -19,3 +19,5 @@ Route::get('/', function () {
 });
 Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
 Route::get('/admin/data-anak', [AdminController::class, 'dataanak'])->name('admin.dataanak');
+Route::get('/get-motorik/{usia_id}', [AdminController::class, 'getMotorik']);
+Route::get('/get-bicara/{usia_id}', [AdminController::class, 'getBicara']);

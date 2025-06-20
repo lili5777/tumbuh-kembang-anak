@@ -9,7 +9,6 @@ class Anak extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'user_id',
         'nama',
         'usia_id',
         'tb',
