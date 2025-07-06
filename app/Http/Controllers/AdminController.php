@@ -12,12 +12,15 @@ class AdminController extends Controller
     //
     public function index()
     {
-        return view('admin.index');
+        $normalCount = Anak::where('ketegori', 'Normal')->count();
+        $sedangCount = Anak::where('ketegori', 'Risiko Sedang')->count();
+        $beratCount = Anak::where('ketegori', 'Risiko Berat')->count();
+        return view('admin.index', compact('normalCount', 'sedangCount', 'beratCount'));
     }
 
     public function dataanak()
     {
-        $data = Anak::simplePaginate(10);
+        $data = Anak::paginate(10);
         $usia = Usia::all();
         $motorik = Kemampuan::where('status', 'motorik')->get();
         $bicara = Kemampuan::where('status', 'bicara')->get();

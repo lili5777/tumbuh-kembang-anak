@@ -4,7 +4,6 @@
         <li><a href="{{route('admin.index')}}" class="nav-link">Dashboard</a></li>
         <li><a href="{{route('admin.dataanak')}}" class="nav-link">Data Anak</a></li>
         <li><a href="{{route('admin.dataknn')}}" class="nav-link">Klasifikasi KNN</a></li>
-        <li><a href="#" class="nav-link">Laporan</a></li>
         <li><a href="#" class="nav-link">Logout</a></li>
     </ul>
 </div>

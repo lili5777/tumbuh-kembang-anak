@@ -420,7 +420,7 @@
     </section>
 
     <!-- Proses Penanganan -->
-    <section id="penanganan" class="py-5">
+    {{-- <section id="penanganan" class="py-5">
         <div class="container">
             <div class="text-center mb-5">
                 <h2 class="fw-bold">Proses Penanganan dan Intervensi</h2>
@@ -459,10 +459,10 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> --}}
 
     <!-- FAQ -->
-    <section id="faq" class="py-5 bg-light">
+    {{-- <section id="faq" class="py-5 bg-light">
         <div class="container">
             <div class="text-center mb-5">
                 <h2 class="fw-bold">Pertanyaan yang Sering Diajukan</h2>
@@ -559,7 +559,7 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> --}}
 
     <!-- Konsultasi -->
     {{-- <section id="kontak" class="py-5">
@@ -651,7 +651,7 @@
     <!-- Footer -->
     <footer class="py-5">
         <div class="container">
-            <div class="row">
+            {{-- <div class="row">
                 <div class="col-lg-4 mb-4 mb-lg-0">
                     <h5 class="text-uppercase mb-4">Tentang Kami</h5>
                     <p>Platform edukasi dan konsultasi tumbuh kembang anak yang dikelola oleh tim profesional
@@ -695,9 +695,9 @@
                         <button class="btn btn-primary" type="button">Daftar</button>
                     </div>
                 </div>
-            </div>
+            </div> --}}
 
-            <hr class="my-4 bg-light">
+            {{-- <hr class="my-4 bg-light"> --}}
 
             <div class="row align-items-center">
                 <div class="col-md-6 text-center text-md-start">
