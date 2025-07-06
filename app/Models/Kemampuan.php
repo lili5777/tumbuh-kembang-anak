@@ -13,4 +13,8 @@ class Kemampuan extends Model
         'status',
         'keterangan',
     ];
+
+    
+
+
 }

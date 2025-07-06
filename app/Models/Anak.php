@@ -18,4 +18,11 @@ class Anak extends Model
         'bicara_id',
         'kategori'
     ];
+
+    // public function usia()
+    // {
+    //     return $this->belongsTo(Usia::class, 'usia_id');
+    // }
+
+
 }

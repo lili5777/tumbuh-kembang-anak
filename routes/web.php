@@ -24,3 +24,6 @@ Route::get('/get-bicara/{usia_id}', [AdminController::class, 'getBicara']);
 Route::post('/admin/tambah-data-anak', [AdminController::class, 'tambahdataanak'])->name('admin.tambahdataanak');
 Route::put('/admin/edit-data-anak/{id}', [AdminController::class, 'editdataanak'])->name('admin.editdataanak');
 Route::delete('/admin/hapus-data-anak/{id}', [AdminController::class, 'hapusdataanak'])->name('admin.hapusdataanak');
+
+Route::get('/admin/data-anak-knn', [AdminController::class, 'dataknn'])->name('admin.dataknn');
+Route::post('/admin/proses-knn', [AdminController::class, 'prosesknn'])->name('admin.prosesknn');

@@ -17,7 +17,7 @@ class AdminController extends Controller
 
     public function dataanak()
     {
-        $data = Anak::all();
+        $data = Anak::simplePaginate(10);
         $usia = Usia::all();
         $motorik = Kemampuan::where('status', 'motorik')->get();
         $bicara = Kemampuan::where('status', 'bicara')->get();
@@ -240,5 +240,139 @@ class AdminController extends Controller
         $anak = Anak::findOrFail($id);
         $anak->delete();
         return redirect()->route('admin.dataanak')->with('success', 'Data anak berhasil dihapus.');
+    }
+
+    // knn
+    public function dataknn()
+    {
+        $data = Anak::all();
+        $usia = Usia::all();
+        $motorik = Kemampuan::where('status', 'motorik')->get();
+        $bicara = Kemampuan::where('status', 'bicara')->get();
+        
+        return view('admin.knn.index', compact('data', 'usia', 'motorik', 'bicara'));
+    }
+
+    public function prosesknn(Request $request)
+    {
+       $request->validate([
+            'nama' => 'required|string|max:255',
+            'usia_id' => 'required|exists:usias,id',
+            'tb' => 'required|numeric',
+            'bb' => 'required|numeric',
+            'lk' => 'required|numeric',
+            'motorik_id' => 'required|exists:kemampuans,id',
+            'bicara_id' => 'required|exists:kemampuans,id',
+        ]);
+
+
+        $newChild= new Anak();
+        $newChild->nama = $request->nama;
+        $newChild->usia_id = $request->usia_id;
+        $newChild->lk = $request->lk;
+        $newChild->bb = $request->bb;
+        $newChild->tb = $request->tb;
+        $newChild->motorik_id = $request->motorik_id;
+        $newChild->bicara_id = $request->bicara_id;
+        $newChild->save();
+
+        $allChildren = Anak::where('id', '!=', $newChild->id)
+            ->where('usia_id', $request->usia_id)
+            ->get()
+            ->map(function ($anak) {
+                // Kategorisasi motorik
+                $motorikId = $anak->motorik_id;
+                if (in_array($motorikId, [1, 7, 13, 19, 25, 31, 37])) {
+                    $anak->motorik_category = 1;
+                } elseif (in_array($motorikId, [2, 8, 14, 20, 26, 32, 38])) {
+                    $anak->motorik_category = 2;
+                } elseif (in_array($motorikId, [3, 9, 15, 21, 27, 33, 39])) {
+                    $anak->motorik_category = 3;
+                } else {
+                    $anak->motorik_category = 0;
+                }
+
+                // Kategorisasi bicara
+                $bicaraId = $anak->bicara_id;
+                if (in_array($bicaraId, [4,10,16,22,28,34,40])) {
+                    $anak->bicara_category = 1;
+                } elseif (in_array($bicaraId, [5,11,17,23,29,35,41])) {
+                    $anak->bicara_category = 2;
+                } elseif (in_array($bicaraId, [6,12,18,24,30,36,42])) {
+                    $anak->bicara_category = 3;
+                } else {
+                    $anak->bicara_category = 0;
+                }
+
+                return $anak;
+            });
+        
+        $distances = [];
+        foreach ($allChildren as $child) {
+            $distance = sqrt(
+                pow($newChild->tb - $child->tb, 2) +
+                pow($newChild->bb - $child->bb, 2) +
+                pow($newChild->lk - $child->lk, 2) +
+                pow($newChild->motorik_category - $child->motorik_category, 2) +
+                pow($newChild->bicara_category - $child->bicara_category, 2)
+            );
+            $distances[] = [
+                'anak' => $child,
+                'distance' => $distance
+            ];
+        }
+
+        usort($distances, function ($a, $b) {
+            return $a['distance'] <=> $b['distance'];
+        });
+
+        // dd($distances);
+
+        $nearestNeighbors = array_slice($distances, 0, 5);
+        // return json_encode($nearestNeighbors);
+
+        // Hitung voting mayoritas
+        $votingResults = [];
+        foreach ($nearestNeighbors as $neighbor) {
+            $category = $neighbor['anak']->ketegori;
+            if (!isset($votingResults[$category])) {
+                $votingResults[$category] = 0;
+            }
+            $votingResults[$category]++;
+        }
+
+        // Tentukan kategori berdasarkan voting mayoritas
+        arsort($votingResults);
+        $finalCategory = key($votingResults);
+        $newChild->ketegori = $finalCategory;
+        $newChild->update();
+
+        $usia=Usia::all();
+        $kemampuan= Kemampuan::all();
+        // dd($nearestNeighbors);
+        // dd($newChild, $distances, $nearestNeighbors, $votingResults);
+        // return view('admin.knn.index', [
+        //     'newChild' => $newChild,
+        //     'kValue' => 2,
+        //     'distances' => $distances,
+        //     'nearestNeighbors' => $nearestNeighbors,
+        //     'votingResults' => $votingResults,
+        //     'usia' => $usia,
+        //     'kemampuan' => $kemampuan,
+        // ]);
+        session([
+            'knn_results' => [
+                'newChild' => $newChild,
+                'kValue' => 5,
+                'distances' => $distances,
+                'nearestNeighbors' => $nearestNeighbors,
+                'votingResults' => $votingResults,
+                'usia' => $usia,
+                'kemampuan' => $kemampuan,
+            ]
+        ]);
+
+        return back()->with('success', 'Data berhasil diproses dengan algoritma KNN. Hasil klasifikasi: ' . $finalCategory);
+        
     }
 }
