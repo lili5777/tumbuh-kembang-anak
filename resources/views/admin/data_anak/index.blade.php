@@ -25,7 +25,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($data as $index => $anak)
+                        @forelse ($data as $index => $anak)
                             <tr>
                                 <td>{{ $index + 1 }}</td>
                                 <td>{{ $anak->nama }}</td>
@@ -44,7 +44,7 @@
                                             <i class="fas fa-edit"></i>
                                         </button>
                                         <button class="btn btn-sm btn-danger" data-bs-toggle="modal"
-                                            data-bs-target="#deleteChildModal-{{ $anak->id }}"  data-id="{{ $anak->id }}">
+                                            data-bs-target="#deleteChildModal-{{ $anak->id }}" data-id="{{ $anak->id }}">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </div>
@@ -53,31 +53,24 @@
                             @include('admin.data_anak.viewmodal')
                             @include('admin.data_anak.editmodal')
                             @include('admin.data_anak.deletemodal')
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="7" class="text-center py-4">
+                                    <div class="text-muted">
+                                        <i class="fas fa-inbox fa-3x mb-3"></i>
+                                        <p class="mb-1">Belum ada data anak</p>
+                                        <p class="small">Klik tombol "Tambah Data" untuk menambahkan data anak baru</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
-
-            <!-- Pagination -->
-            {{-- <nav aria-label="Page navigation">
-                <ul class="pagination justify-content-center">
-                    <li class="page-item disabled">
-                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
-                    </li>
-                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">Next</a>
-                    </li>
-                </ul>
-            </nav> --}}
         </div>
     </div>
 
-
-
-    <!-- Di bagian form Add Child Modal -->
+    <!-- Add Child Modal -->
     <div class="modal fade" id="addChildModal" tabindex="-1" aria-labelledby="addChildModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -93,7 +86,8 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="childName" class="form-label">Nama Lengkap</label>
-                                    <input type="text" class="form-control" id="childName" name="nama" required placeholder="Masukan Nama">
+                                    <input type="text" class="form-control" id="childName" name="nama" required
+                                        placeholder="Masukan Nama">
                                 </div>
                                 <div class="mb-3">
                                     <label for="usia_id" class="form-label">Usia</label>
@@ -156,23 +150,23 @@
         </div>
     </div>
 
-
     <!-- Include Bootstrap 5.3.7 JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Include Font Awesome for icons -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+
     <style>
         body {
             background-color: #f8f9fa;
         }
-        .ct{
+
+        .ct {
             font-size: 14px;
         }
 
-        .ch{
+        .ch {
             font-size: 16px;
             font-weight: 500;
-
         }
 
         .content {
@@ -261,10 +255,11 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function () {
+            // === SCRIPT UNTUK ADD MODAL ===
             // Inisialisasi - disable motorik dan bicara
             $('#motorik_id, #bicara_id').prop('disabled', true);
 
-            // Ketika usia dipilih
+            // Ketika usia dipilih di add modal
             $('#usia_id').change(function () {
                 var usiaId = $(this).val();
 
@@ -308,37 +303,9 @@
                 }
             });
 
-
-            $('#editChildModal-{{ $anak->id }}').on('shown.bs.modal', function () {
-                $('#usia_id-{{ $anak->id }}').trigger('change');
-            });
-
-            // Saat usia BERUBAH, update motorik & bicara
-            $('#usia_id-{{ $anak->id }}').change(function () {
-                var usiaId = $(this).val();
-                var motorikSelect = $('#motorik_id-{{ $anak->id }}');
-                var bicaraSelect = $('#bicara_id-{{ $anak->id }}');
-
-                if (usiaId) {
-                    // Ambil data motorik
-                    $.get('/get-motorik/' + usiaId, function (data) {
-                        motorikSelect.empty().append('<option value="" disabled>Pilih Motorik</option>');
-                        $.each(data, function (key, value) {
-                            motorikSelect.append(`<option value="${value.id}">${value.keterangan}</option>`);
-                        });
-                    });
-
-                    // Ambil data bicara
-                    $.get('/get-bicara/' + usiaId, function (data) {
-                        bicaraSelect.empty().append('<option value="" disabled>Pilih Bicara</option>');
-                        $.each(data, function (key, value) {
-                            bicaraSelect.append(`<option value="${value.id}">${value.keterangan}</option>`);
-                        });
-                    });
-                }
-            });
-
-
+            // === SCRIPT UNTUK EDIT MODAL ===
+            // Script untuk setiap modal edit akan di-handle oleh file editmodal.blade.php
+            // karena setiap modal memiliki ID unik berdasarkan $anak->id
         });
     </script>
 @endsection

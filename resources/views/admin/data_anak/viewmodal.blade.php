@@ -69,8 +69,8 @@
 
                 <div class="mt-3">
                     <h5 class="border-bottom pb-2 ch">Kategori</h5>
-                    @if ($anak->kategori)
-                        <p class="text-muted ct">{{ $anak->kategori }}</p>
+                    @if ($anak->ketegori)
+                        <p class="text-muted ct">{{ $anak->ketegori }}</p>
                     @else
                         <p class="text-muted ct">Kategori belum ditentukan</p>
                     @endif
