@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UsiaSeeder::class,
             MotorikSeeder::class,
+            UserSeeder::class,
         ]);
     }
 }

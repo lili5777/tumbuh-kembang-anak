@@ -20,7 +20,7 @@ class AdminController extends Controller
 
     public function dataanak()
     {
-        $data = Anak::paginate(10);
+        $data = Anak::orderBy('created_at', 'desc')->paginate(10);
         $usia = Usia::all();
         $motorik = Kemampuan::where('status', 'motorik')->get();
         $bicara = Kemampuan::where('status', 'bicara')->get();
