@@ -23,6 +23,7 @@ class AdminController extends Controller
     public function dataanak()
     {
         $data = Anak::orderBy('created_at', 'desc')->paginate(10);
+        // $data=Anak::paginate(15);
         $usia = Usia::all();
         $motorik = Kemampuan::where('status', 'motorik')->get();
         $bicara = Kemampuan::where('status', 'bicara')->get();
@@ -280,6 +281,29 @@ class AdminController extends Controller
         $newChild->motorik_id = $request->motorik_id;
         $newChild->bicara_id = $request->bicara_id;
         $newChild->save();
+        $motorikIdnew = $newChild->motorik_id;
+        if (in_array($motorikIdnew, [1, 7, 13, 19, 25, 31, 37])) {
+            $motorikIdnew = 1;
+        } elseif (in_array($motorikIdnew, [2, 8, 14, 20, 26, 32, 38])) {
+            $motorikIdnew= 2;
+        } elseif (in_array($motorikIdnew, [3, 9, 15, 21, 27, 33, 39])) {
+            $motorikIdnew = 3;
+        } else {
+            $motorikIdnew = 0;
+        }
+
+        // Kategorisasi bicara
+        $bicaraIdnew = $newChild->bicara_id;
+        if (in_array($bicaraIdnew, [4, 10, 16, 22, 28, 34, 40])) {
+            $bicaraIdnew = 1;
+        } elseif (in_array($bicaraIdnew, [5, 11, 17, 23, 29, 35, 41])) {
+            $bicaraIdnew = 2;
+        } elseif (in_array($bicaraIdnew, [6, 12, 18, 24, 30, 36, 42])) {
+            $bicaraIdnew = 3;
+        } else {
+            $bicaraIdnew = 0;
+        }
+
 
         $allChildren = Anak::where('id', '!=', $newChild->id)
             ->where('usia_id', $request->usia_id)
@@ -318,14 +342,17 @@ class AdminController extends Controller
                 pow($newChild->tb - $child->tb, 2) +
                 pow($newChild->bb - $child->bb, 2) +
                 pow($newChild->lk - $child->lk, 2) +
-                pow($newChild->motorik_category - $child->motorik_category, 2) +
-                pow($newChild->bicara_category - $child->bicara_category, 2)
+                pow($motorikIdnew - $child->motorik_category, 2) +
+                pow($bicaraIdnew - $child->bicara_category, 2)
             );
+            // dd($child);
+            // dd($newChild->tb ,"-", $child->tb, $newChild->bb, "-", $child->bb, $newChild->lk, "-", $child->lk, $motorikIdnew, "-", $child->motorik_category, $bicaraIdnew, "-", $child->bicara_category );
             $distances[] = [
                 'anak' => $child,
                 'distance' => $distance
             ];
         }
+        
 
         usort($distances, function ($a, $b) {
             return $a['distance'] <=> $b['distance'];
