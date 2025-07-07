@@ -36,4 +36,6 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/admin/data-anak-knn', [AdminController::class, 'dataknn'])->name('admin.dataknn');
     Route::post('/admin/proses-knn', [AdminController::class, 'prosesknn'])->name('admin.prosesknn');
+    // In routes/web.php
+    Route::get('/generate-report', [AdminController::class, 'generateReport'])->name('generate.report');
 });

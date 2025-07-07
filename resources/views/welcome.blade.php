@@ -146,7 +146,7 @@
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
+            {{-- <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
                         <a class="nav-link active" href="#home">Beranda</a>
@@ -164,7 +164,7 @@
                         <a class="nav-link" href="#faq">FAQ</a>
                     </li>
                 </ul>
-            </div>
+            </div> --}}
         </div>
     </nav>
 
@@ -177,8 +177,8 @@
                     <p class="lead mb-4">Platform edukasi untuk memahami berbagai klasifikasi penyimpangan tumbuh
                         kembang anak dan langkah penanganannya.</p>
                     <div class="d-flex gap-3">
-                        <a href="#klasifikasi" class="btn btn-light btn-lg px-4">Pelajari Lebih Lanjut</a>
-                        <a href="#kontak" class="btn btn-outline-light btn-lg px-4">Konsultasi Ahli</a>
+                        <a href="{{route('login')}}" class="btn btn-light btn-lg px-4">Cek Pertumbuhan anak anda</a>
+                        {{-- <a href="#kontak" class="btn btn-outline-light btn-lg px-4">Konsultasi Ahli</a> --}}
                     </div>
                 </div>
                 <div class="col-lg-6 d-none d-lg-block">
@@ -230,7 +230,7 @@
     </section> --}}
 
     <!-- Klasifikasi -->
-    <section id="klasifikasi" class="py-5">
+    {{-- <section id="klasifikasi" class="py-5">
         <div class="container">
             <div class="text-center mb-5">
                 <h2 class="fw-bold">Klasifikasi Penyimpangan Tumbuh Kembang Anak</h2>
@@ -239,20 +239,7 @@
 
             <div class="row g-4 d-flex justify-content-center">
 
-                {{-- <div class="col-md-6 col-lg-3">
-                    <div class="card h-100 card-hover">
-                        <div class="card-body text-center">
-                            <div class="feature-icon">
-                                <i class="fas fa-brain"></i>
-                            </div>
-                            <h4 class="card-title">Gangguan Kognitif</h4>
-                            <p class="card-text">Termasuk keterbelakangan mental, kesulitan belajar spesifik, dan
-                                gangguan pemrosesan informasi.</p>
-                            <a href="#" class="btn btn-outline-primary" data-bs-toggle="modal"
-                                data-bs-target="#kognitifModal">Detail</a>
-                        </div>
-                    </div>
-                </div> --}}
+                
 
                 <div class="col-md-6 col-lg-3">
                     <div class="card h-100 card-hover">
@@ -284,27 +271,12 @@
                     </div>
                 </div>
 
-                {{-- <div class="col-md-6 col-lg-3">
-                    <div class="card h-100 card-hover">
-                        <div class="card-body text-center">
-                            <div class="feature-icon">
-                                <i class="fas fa-users"></i>
-                            </div>
-                            <h4 class="card-title">Gangguan Sosial-Emosional</h4>
-                            <p class="card-text">Seperti gangguan spektrum autisme, ADHD, gangguan kecemasan, dan
-                                gangguan perilaku.</p>
-                            <a href="#" class="btn btn-outline-primary" data-bs-toggle="modal"
-                                data-bs-target="#sosialModal">Detail</a>
-                        </div>
-                    </div>
-                </div> --}}
-
             </div>
         </div>
-    </section>
+    </section> --}}
 
     <!-- Gejala dan Tanda -->
-    <section id="gejala" class="py-5 bg-light">
+    {{-- <section id="gejala" class="py-5 bg-light">
         <div class="container">
             <div class="text-center mb-5">
                 <h2 class="fw-bold">Gejala dan Tanda Penyimpangan</h2>
@@ -417,7 +389,7 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> --}}
 
     <!-- Proses Penanganan -->
     {{-- <section id="penanganan" class="py-5">
@@ -649,9 +621,9 @@
     </section> --}}
 
     <!-- Footer -->
-    <footer class="py-5">
+    {{-- <footer class="py-5">
         <div class="container">
-            {{-- <div class="row">
+            <div class="row">
                 <div class="col-lg-4 mb-4 mb-lg-0">
                     <h5 class="text-uppercase mb-4">Tentang Kami</h5>
                     <p>Platform edukasi dan konsultasi tumbuh kembang anak yang dikelola oleh tim profesional
@@ -695,9 +667,9 @@
                         <button class="btn btn-primary" type="button">Daftar</button>
                     </div>
                 </div>
-            </div> --}}
+            </div>
 
-            {{-- <hr class="my-4 bg-light"> --}}
+            <hr class="my-4 bg-light">
 
             <div class="row align-items-center">
                 <div class="col-md-6 text-center text-md-start">
@@ -709,7 +681,7 @@
                 </div>
             </div>
         </div>
-    </footer>
+    </footer> --}}
 
     <!-- Back to Top Button -->
     <a href="#" class="back-to-top" id="backToTop"><i class="fas fa-arrow-up"></i></a>

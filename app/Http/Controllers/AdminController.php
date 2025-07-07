@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Anak;
 use App\Models\Kemampuan;
+use App\Models\Rekomendasi;
 use App\Models\Usia;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class AdminController extends Controller
 {
@@ -349,20 +351,13 @@ class AdminController extends Controller
         $finalCategory = key($votingResults);
         $newChild->ketegori = $finalCategory;
         $newChild->update();
+        
+
+        $rekomendasi=Rekomendasi::where('usia_id',$newChild->usia_id)->where('kategori',$newChild->ketegori)->get();
+        // dd($rekomendasi);
 
         $usia=Usia::all();
         $kemampuan= Kemampuan::all();
-        // dd($nearestNeighbors);
-        // dd($newChild, $distances, $nearestNeighbors, $votingResults);
-        // return view('admin.knn.index', [
-        //     'newChild' => $newChild,
-        //     'kValue' => 2,
-        //     'distances' => $distances,
-        //     'nearestNeighbors' => $nearestNeighbors,
-        //     'votingResults' => $votingResults,
-        //     'usia' => $usia,
-        //     'kemampuan' => $kemampuan,
-        // ]);
         session([
             'knn_results' => [
                 'newChild' => $newChild,
@@ -372,10 +367,35 @@ class AdminController extends Controller
                 'votingResults' => $votingResults,
                 'usia' => $usia,
                 'kemampuan' => $kemampuan,
+                'rekomendasi'=>$rekomendasi,
             ]
         ]);
 
         return back()->with('success', 'Data berhasil diproses dengan algoritma KNN. Hasil klasifikasi: ' . $finalCategory);
         
+    }
+
+    public function generateReport()
+    {
+        // Get all the KNN results from session
+        $knnResults = session('knn_results');
+
+        if (!$knnResults) {
+            return redirect()->back()->with('error', 'Tidak ada data hasil KNN yang tersedia');
+        }
+
+        $data = [
+            'newChild' => $knnResults['newChild'] ?? null,
+            'kValue' => $knnResults['kValue'] ?? null,
+            'distances' => $knnResults['distances'] ?? [],
+            'nearestNeighbors' => $knnResults['nearestNeighbors'] ?? [],
+            'votingResults' => $knnResults['votingResults'] ?? [],
+            'usia' => $knnResults['usia'] ?? collect(),
+            'kemampuan' => $knnResults['kemampuan'] ?? collect(),
+            'rekomendasi' => $knnResults['rekomendasi'] ?? null,
+        ];
+
+        $pdf = Pdf::loadView('admin.report', $data);
+        return $pdf->download('laporan-knn-' . now()->format('YmdHis') . '.pdf');
     }
 }
