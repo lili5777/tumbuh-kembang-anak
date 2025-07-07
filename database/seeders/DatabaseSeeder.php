@@ -15,6 +15,9 @@ class DatabaseSeeder extends Seeder
             UsiaSeeder::class,
             MotorikSeeder::class,
             UserSeeder::class,
+            AnakSeeder::class,
+            IndikatorSeeder::class,
+            RekomendasiSeeder::class,
         ]);
     }
 }

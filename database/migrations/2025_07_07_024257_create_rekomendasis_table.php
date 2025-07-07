@@ -13,8 +13,12 @@ return new class extends Migration
     {
         Schema::create('rekomendasis', function (Blueprint $table) {
             $table->id();
-            $table->string('nutrisi');
-            $table->string('medis');
+            $table->foreignId('usia_id')->constrained('usias')->onDelete('cascade');
+            $table->foreignId('indikator_id')->constrained('indikators')->onDelete('cascade');
+            $table->string('kategori');
+            $table->text('rekomendasi1');
+            $table->text('rekomendasi2');
+            $table->text('rekomendasi3');
             $table->timestamps();
         });
     }
