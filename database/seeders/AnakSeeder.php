@@ -48,9 +48,7 @@ class AnakSeeder extends Seeder
             ['nama' => 'Bella', 'usia_id' => 2, 'tb' => 59.00, 'bb' => 5.70, 'lk' => 38.00, 'motorik_id' => 9, 'bicara_id' => 12, 'ketegori' => 'Risiko Berat', 'created_at' => '2025-07-06 10:33:40', 'updated_at' => '2025-07-06 10:33:40'],
             ['nama' => 'Cakra', 'usia_id' => 2, 'tb' => 56.00, 'bb' => 5.00, 'lk' => 37.00, 'motorik_id' => 9, 'bicara_id' => 11, 'ketegori' => 'Risiko Berat', 'created_at' => '2025-07-06 10:34:21', 'updated_at' => '2025-07-06 10:34:21'],
             ['nama' => 'Dini', 'usia_id' => 2, 'tb' => 57.00, 'bb' => 5.30, 'lk' => 38.00, 'motorik_id' => 8, 'bicara_id' => 12, 'ketegori' => 'Risiko Berat', 'created_at' => '2025-07-06 10:34:47', 'updated_at' => '2025-07-06 10:34:47'],
-            // Add more records for age group 2...
-
-            // Age group 3
+           
             // Age group 3
             ['nama' => 'Raisa', 'usia_id' => 3, 'tb' => 70.00, 'bb' => 7.80, 'lk' => 43.00, 'motorik_id' => 13, 'bicara_id' => 16, 'ketegori' => 'Normal', 'created_at' => '2025-07-06 10:35:48', 'updated_at' => '2025-07-06 10:35:48'],
             ['nama' => 'Farhan', 'usia_id' => 3, 'tb' => 68.00, 'bb' => 7.00, 'lk' => 42.00, 'motorik_id' => 13, 'bicara_id' => 16, 'ketegori' => 'Normal', 'created_at' => '2025-07-06 10:36:16', 'updated_at' => '2025-07-06 10:36:16'],
