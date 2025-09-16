@@ -1,66 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Dashboard</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
     }
-    .sidebar {
-      height: 100vh;
+
+    @media (min-width: 992px) {
+    #sidebar {
       position: fixed;
       top: 0;
       left: 0;
-      padding-top: 60px;
-      background-color: #343a40;
-    }
-    .sidebar .nav-link {
-      color: #fff;
-    }
-    .sidebar .nav-link:hover {
-      background-color: #495057;
+      height: 100vh; /* sidebar full tinggi */
     }
     .content {
-      margin-left: 220px;
-      padding: 20px;
+      margin-left: 220px; /* sesuai lebar sidebar */
     }
-
-    @media (max-width: 768px) {
-      .sidebar {
-        position: static;
-        height: auto;
-        width: 100%;
-      }
-      .content {
-        margin-left: 0;
-      }
-    }
+  }
   </style>
 </head>
-<body>
 
-  {{-- <!-- Navbar / Topbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top ">
+<body class="bg-light">
+
+  {{-- Navbar untuk toggle sidebar di mobile --}}
+  <nav class="navbar navbar-dark bg-dark d-lg-none">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#">Admin Panel</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
+      <button class="btn btn-outline-light" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar"
+        aria-controls="sidebar">
+        ☰ Menu
       </button>
     </div>
-  </nav> --}}
+  </nav>
 
- @include('admin.sidebar')
+  @include('admin.sidebar')
 
-  @yield('content')
+  <main class="content p-3">
+    @yield('content')
+  </main>
 
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

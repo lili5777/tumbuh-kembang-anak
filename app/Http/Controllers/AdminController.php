@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Anak;
+use App\Models\DataKNN;
 use App\Models\Kemampuan;
 use App\Models\Rekomendasi;
 use App\Models\Usia;
@@ -28,6 +29,23 @@ class AdminController extends Controller
         $motorik = Kemampuan::where('status', 'motorik')->get();
         $bicara = Kemampuan::where('status', 'bicara')->get();
         return view('admin.data_anak.index', compact('data', 'usia', 'motorik', 'bicara'));
+    }
+
+    public function dataknnn()
+    {
+        $data = DataKNN::orderBy('created_at', 'desc')->paginate(10);
+        // $data=Anak::paginate(15);
+        $usia = Usia::all();
+        $motorik = Kemampuan::where('status', 'motorik')->get();
+        $bicara = Kemampuan::where('status', 'bicara')->get();
+        return view('admin.data_knn.index', compact('data', 'usia', 'motorik', 'bicara'));
+    }
+
+    public function hapusdataknnn($id)
+    {
+        $data = DataKNN::findOrFail($id);
+        $data->delete();
+        return redirect()->route('admin.dataknnn')->with('success', 'Data KNN berhasil dihapus.');
     }
     public function getMotorik($usia_id)
     {
@@ -56,18 +74,19 @@ class AdminController extends Controller
             'bicara_id' => 'required|exists:kemampuans,id',
         ]);
 
-       $kategori = $this->proseskategori($data['usia_id'], $data['lk'], $data['bb'], $data['tb'], $data['motorik_id'], $data['bicara_id']);
-        
-        $anak= new Anak();
+        $kategori = $this->proseskategori($data['usia_id'], $data['lk'], $data['bb'], $data['tb'], $data['motorik_id'], $data['bicara_id']);
+
+        $anak = new Anak();
         $anak->fill($data);
         $anak->ketegori = $kategori;
         $anak->save();
-       
+
 
         return redirect()->route('admin.dataanak')->with('success', 'Data anak berhasil ditambahkan.');
     }
 
-    private function proseskategori($usia_id, $lk, $bb, $tb, $motorik_id, $bicara_id){
+    private function proseskategori($usia_id, $lk, $bb, $tb, $motorik_id, $bicara_id)
+    {
         // Inisialisasi level risiko (default: Normal)
         $lk_risk = 'N';      // Lingkar Kepala
         $bb_risk = 'N';      // Berat Badan
@@ -80,7 +99,7 @@ class AdminController extends Controller
                 // Lingkar kepala
                 if ($lk >= 32 && $lk <= 33) $lk_risk = 'S';
                 elseif ($lk < 32) $lk_risk = 'B';
-                
+
                 // Berat badan
                 if ($bb >= 2.3 && $bb <= 2.5) $bb_risk = 'S';
                 elseif ($bb < 2.3) $bb_risk = 'B';
@@ -229,9 +248,9 @@ class AdminController extends Controller
             'bicara_id' => 'required|exists:kemampuans,id',
         ]);
 
-        
+
         $kategori = $this->proseskategori($data['usia_id'], $data['lk'], $data['bb'], $data['tb'], $data['motorik_id'], $data['bicara_id']);
-        
+
 
         $anak->update($data);
         $anak2 = Anak::findOrFail($id);
@@ -255,13 +274,13 @@ class AdminController extends Controller
         $usia = Usia::all();
         $motorik = Kemampuan::where('status', 'motorik')->get();
         $bicara = Kemampuan::where('status', 'bicara')->get();
-        
+
         return view('admin.knn.index', compact('data', 'usia', 'motorik', 'bicara'));
     }
 
     public function prosesknn(Request $request)
     {
-       $request->validate([
+        $request->validate([
             'nama' => 'required|string|max:255',
             'usia_id' => 'required|exists:usias,id',
             'tb' => 'required|numeric',
@@ -272,7 +291,7 @@ class AdminController extends Controller
         ]);
 
 
-        $newChild= new Anak();
+        $newChild = new DataKNN();
         $newChild->nama = $request->nama;
         $newChild->usia_id = $request->usia_id;
         $newChild->lk = $request->lk;
@@ -285,7 +304,7 @@ class AdminController extends Controller
         if (in_array($motorikIdnew, [1, 7, 13, 19, 25, 31, 37])) {
             $motorikIdnew = 1;
         } elseif (in_array($motorikIdnew, [2, 8, 14, 20, 26, 32, 38])) {
-            $motorikIdnew= 2;
+            $motorikIdnew = 2;
         } elseif (in_array($motorikIdnew, [3, 9, 15, 21, 27, 33, 39])) {
             $motorikIdnew = 3;
         } else {
@@ -323,36 +342,60 @@ class AdminController extends Controller
 
                 // Kategorisasi bicara
                 $bicaraId = $anak->bicara_id;
-                if (in_array($bicaraId, [4,10,16,22,28,34,40])) {
+                if (in_array($bicaraId, [4, 10, 16, 22, 28, 34, 40])) {
                     $anak->bicara_category = 1;
-                } elseif (in_array($bicaraId, [5,11,17,23,29,35,41])) {
+                } elseif (in_array($bicaraId, [5, 11, 17, 23, 29, 35, 41])) {
                     $anak->bicara_category = 2;
-                } elseif (in_array($bicaraId, [6,12,18,24,30,36,42])) {
+                } elseif (in_array($bicaraId, [6, 12, 18, 24, 30, 36, 42])) {
                     $anak->bicara_category = 3;
                 } else {
                     $anak->bicara_category = 0;
                 }
-
                 return $anak;
             });
-        
+
         $distances = [];
         foreach ($allChildren as $child) {
+            $diffs = [
+                'bb' => $newChild->bb - $child->bb,
+                'tb' => $newChild->tb - $child->tb,
+                'lk' => $newChild->lk - $child->lk,
+                'motorik' => $motorikIdnew - $child->motorik_category,
+                'bicara' => $bicaraIdnew - $child->bicara_category,
+                'bb_2' => pow($newChild->bb - $child->bb, 2),
+                'tb_2' => pow($newChild->tb - $child->tb, 2),
+                'lk_2' => pow($newChild->lk - $child->lk, 2),
+                'motorik_2' => pow($motorikIdnew - $child->motorik_category, 2),
+                'bicara_2' => pow($bicaraIdnew - $child->bicara_category, 2),
+                'total' => pow($newChild->tb - $child->tb, 2) +
+                    pow($newChild->bb - $child->bb, 2) +
+                    pow($newChild->lk - $child->lk, 2) +
+                    pow($motorikIdnew - $child->motorik_category, 2) +
+                    pow($bicaraIdnew - $child->bicara_category, 2),
+                'motorik_id' => $child->motorik_category,
+                'bicara_id' => $child->bicara_category,
+
+
+            ];
             $distance = sqrt(
                 pow($newChild->tb - $child->tb, 2) +
-                pow($newChild->bb - $child->bb, 2) +
-                pow($newChild->lk - $child->lk, 2) +
-                pow($motorikIdnew - $child->motorik_category, 2) +
-                pow($bicaraIdnew - $child->bicara_category, 2)
+                    pow($newChild->bb - $child->bb, 2) +
+                    pow($newChild->lk - $child->lk, 2) +
+                    pow($motorikIdnew - $child->motorik_category, 2) +
+                    pow($bicaraIdnew - $child->bicara_category, 2)
             );
             // dd($child);
             // dd($newChild->tb ,"-", $child->tb, $newChild->bb, "-", $child->bb, $newChild->lk, "-", $child->lk, $motorikIdnew, "-", $child->motorik_category, $bicaraIdnew, "-", $child->bicara_category );
             $distances[] = [
                 'anak' => $child,
-                'distance' => $distance
+                'perbedaan' => $diffs,
+                'distance' => $distance,
+
             ];
         }
-        
+
+        // dd($distances);
+
 
         usort($distances, function ($a, $b) {
             return $a['distance'] <=> $b['distance'];
@@ -378,13 +421,13 @@ class AdminController extends Controller
         $finalCategory = key($votingResults);
         $newChild->ketegori = $finalCategory;
         $newChild->update();
-        
 
-        $rekomendasi=Rekomendasi::where('usia_id',$newChild->usia_id)->where('kategori',$newChild->ketegori)->get();
+
+        $rekomendasi = Rekomendasi::where('usia_id', $newChild->usia_id)->where('kategori', $newChild->ketegori)->get();
         // dd($rekomendasi);
 
-        $usia=Usia::all();
-        $kemampuan= Kemampuan::all();
+        $usia = Usia::all();
+        $kemampuan = Kemampuan::all();
         session([
             'knn_results' => [
                 'newChild' => $newChild,
@@ -394,12 +437,11 @@ class AdminController extends Controller
                 'votingResults' => $votingResults,
                 'usia' => $usia,
                 'kemampuan' => $kemampuan,
-                'rekomendasi'=>$rekomendasi,
+                'rekomendasi' => $rekomendasi,
             ]
         ]);
 
         return back()->with('success', 'Data berhasil diproses dengan algoritma KNN. Hasil klasifikasi: ' . $finalCategory);
-        
     }
 
     public function generateReport()

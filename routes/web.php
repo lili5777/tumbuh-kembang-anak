@@ -38,4 +38,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/admin/proses-knn', [AdminController::class, 'prosesknn'])->name('admin.prosesknn');
     // In routes/web.php
     Route::get('/generate-report', [AdminController::class, 'generateReport'])->name('generate.report');
+
+    Route::get('/admin/data-knn', [AdminController::class, 'dataknnn'])->name('admin.dataknnn');
+    Route::delete('/admin/hapus-data-knn/{id}', [AdminController::class, 'hapusdataknnn'])->name('admin.hapusdataknnn');
 });
