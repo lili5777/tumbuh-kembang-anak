@@ -34,36 +34,67 @@ class AdminController extends Controller
     public function search(Request $request)
     {
         $keyword = $request->get('keyword');
+        $page = $request->get('page', 1);
 
         $data = Anak::with('usia')
             ->when($keyword, function ($query) use ($keyword) {
-                $query->where('nama', 'like', "%{$keyword}%");
+                $query->where(function ($q) use ($keyword) {
+                    $q->where('nama', 'like', "%{$keyword}%")
+                        ->orWhere('ketegori', 'like', "%{$keyword}%");
+                });
             })
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        // return JSON untuk AJAX
-        return response()->json([
-            'data' => $data->items(),
-            'pagination' => (string) $data->links('pagination::bootstrap-4')
+        // Append keyword ke pagination links
+        $data->appends(['keyword' => $keyword]);
+
+        // Jika request AJAX, return JSON
+        if ($request->ajax()) {
+            return response()->json([
+                'data' => $data->items(),
+                'pagination' => (string) $data->links('pagination::bootstrap-4')
+            ]);
+        }
+
+        // Jika request normal (pagination click), return view biasa
+        return view('admin.data_anak.index', compact('data'))->with([
+            'usia' => Usia::all(), // Sesuaikan dengan model Usia Anda
+            // tambahkan variabel lain yang diperlukan view
         ]);
     }
+    
 
     public function searchknn(Request $request)
     {
         $keyword = $request->get('keyword');
+        $page = $request->get('page', 1);
 
         $data = DataKNN::with('usia')
             ->when($keyword, function ($query) use ($keyword) {
-                $query->where('nama', 'like', "%{$keyword}%");
+                $query->where(function ($q) use ($keyword) {
+                    $q->where('nama', 'like', "%{$keyword}%")
+                        ->orWhere('ketegori', 'like', "%{$keyword}%");
+                });
             })
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        // return JSON untuk AJAX
-        return response()->json([
-            'data' => $data->items(),
-            'pagination' => (string) $data->links('pagination::bootstrap-4')
+        // Append keyword ke pagination links
+        $data->appends(['keyword' => $keyword]);
+
+        // Jika request AJAX, return JSON
+        if ($request->ajax()) {
+            return response()->json([
+                'data' => $data->items(),
+                'pagination' => (string) $data->links('pagination::bootstrap-4')
+            ]);
+        }
+
+        // Jika request normal (pagination click), return view biasa
+        return view('admin.data_anak.index', compact('data'))->with([
+            'usia' => Usia::all(), // Sesuaikan dengan model Usia Anda
+            // tambahkan variabel lain yang diperlukan view
         ]);
     }
 
@@ -329,9 +360,13 @@ class AdminController extends Controller
             'motorik_id' => 'required|exists:kemampuans,id',
             'bicara_id' => 'required|exists:kemampuans,id',
         ]);
+        
+        if ($request->id) {
+            $newChild = DataKNN::where('id', $request->id)->first();
+        } else {
+            $newChild = new DataKNN();
+        }
 
-
-        $newChild = new DataKNN();
         $newChild->nama = $request->nama;
         $newChild->usia_id = $request->usia_id;
         $newChild->gender = $request->gender;
@@ -340,7 +375,13 @@ class AdminController extends Controller
         $newChild->tb = $request->tb;
         $newChild->motorik_id = $request->motorik_id;
         $newChild->bicara_id = $request->bicara_id;
-        $newChild->save();
+
+        if ($request->id) {
+            $newChild->update();
+        } else {
+            $newChild->save();
+        }
+
         $motorikIdnew = $newChild->motorik_id;
         if (in_array($motorikIdnew, [1, 7, 13, 19, 25, 31, 37])) {
             $motorikIdnew = 1;
@@ -484,6 +525,7 @@ class AdminController extends Controller
 
         return back()->with('success', 'Data berhasil diproses dengan algoritma KNN. Hasil klasifikasi: ' . $finalCategory);
     }
+
 
     public function generateReport()
     {

@@ -12,7 +12,7 @@
                         <span class="input-group-text bg-light border-end-0">
                             <i class="fas fa-search text-muted"></i>
                         </span>
-                        <input type="text" id="search" class="form-control border-start-0 ps-0" placeholder="Cari nama anak..."
+                        <input type="text" id="search" class="form-control border-start-0 ps-0" placeholder="Cari nama atau kategori anak..."
                             style="box-shadow: none;">
                         <button class="btn btn-outline-secondary d-md-none" type="button" id="clearSearch">
                             <i class="fas fa-times"></i>
@@ -45,6 +45,9 @@
                                 <td>{{ $anak->tb }}</td>
                                 <td class="text-center">
                                     <div class="btn-group" role="group">
+                                        <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editChildModal-{{ $anak->id }}">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
                                         <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
                                             data-bs-target="#viewChildModal-{{ $anak->id }}">
                                             <i class="fas fa-eye"></i>
@@ -57,6 +60,7 @@
                                 </td>
                             </tr>
                             @include('admin.data_anak.viewmodal')
+                            @include('admin.data_knn.editmodal')
                             @include('admin.data_knn.deletemodal')
                         @empty
                             <tr>
@@ -403,54 +407,131 @@
             // karena setiap modal memiliki ID unik berdasarkan $anak->id
         });
 
-         $('#search').on('keyup', function () {
-                let keyword = $(this).val();
+         $(document).ready(function () {
+                // === REALTIME SEARCH WITH DEBOUNCING ===
+                let searchTimeout;
+                $('#search').on('keyup', function () {
+                    let keyword = $(this).val();
 
-                $.ajax({
-                    url: "{{ route('knn.search') }}",
-                    type: "GET",
-                    data: { keyword: keyword },
-                    success: function (response) {
-                        let rows = '';
-                        if (response.data.length > 0) {
-                            $.each(response.data, function (index, anak) {
-                                rows += `
+                    // Clear previous timeout
+                    clearTimeout(searchTimeout);
+
+                    // Set new timeout untuk debouncing (300ms delay)
+                    searchTimeout = setTimeout(function () {
+                        performSearch(keyword, 1); // Always start from page 1 for new search
+                    }, 300);
+                });
+
+                // === HANDLE PAGINATION CLICKS ===
+                $(document).on('click', '.pagination a', function (e) {
+                    e.preventDefault();
+
+                    let url = $(this).attr('href');
+                    let keyword = $('#search').val();
+
+                    if (url) {
+                        // Extract page number from URL
+                        let page = new URL(url).searchParams.get('page') || 1;
+                        performSearch(keyword, page);
+                    }
+                });
+
+                // === SEARCH FUNCTION ===
+                function performSearch(keyword, page = 1) {
+                    $.ajax({
+                        url: "{{ route('knn.search') }}",
+                        type: "GET",
+                        data: {
+                            keyword: keyword,
+                            page: page
+                        },
+                        beforeSend: function () {
+                            // Show loading state
+                            $('tbody').html(`
+                    <tr>
+                        <td colspan="7" class="text-center py-4">
+                            <div class="text-muted">
+                                <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
+                                <p class="mb-1">Mencari data...</p>
+                            </div>
+                        </td>
+                    </tr>
+                `);
+                        },
+                        success: function (response) {
+                            let rows = '';
+                            if (response.data.length > 0) {
+                                $.each(response.data, function (index, anak) {
+                                    // Calculate correct row number based on pagination
+                                    let rowNumber = ((page - 1) * 10) + index + 1;
+
+                                    rows += `
+                            <tr>
+                                <td>${rowNumber}</td>
+                                <td>${anak.nama}</td>
+                                <td>${anak.usia ? anak.usia.umur : '-'}</td>
+                                <td>${anak.lk}</td>
+                                <td>${anak.bb}</td>
+                                <td>${anak.tb}</td>
+                                <td>${anak.ketegori || '-'}</td>
+                            </tr>
+                        `;
+                                });
+                            } else {
+                                rows = `
                         <tr>
-                            <td>${index + 1}</td>
-                            <td>${anak.nama}</td>
-                            <td>${anak.usia ? anak.usia.umur : '-'}</td>
-                            <td>${anak.lk}</td>
-                            <td>${anak.bb}</td>
-                            <td>${anak.tb}</td>
-                            <td class="text-center">
-                                <div class="btn-group" role="group">
-                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                            data-bs-target="#viewChildModal-{{ $anak->id }}"><i class="fas fa-eye"></i></button>
-                                    <button class="btn btn-sm btn-danger"data-bs-toggle="modal"
-                                            data-bs-target="#deleteChildModal-{{ $anak->id }}" data-id="{{ $anak->id }}"><i class="fas fa-trash"></i></button>
+                            <td colspan="7" class="text-center py-4">
+                                <div class="text-muted">
+                                    <i class="fas fa-search fa-3x mb-3"></i>
+                                    <p class="mb-1">Data tidak ditemukan</p>
+                                    <p class="small">Coba gunakan kata kunci lain</p>
                                 </div>
                             </td>
                         </tr>
                     `;
-                            });
-                        } else {
-                            rows = `
+                            }
+
+                            $('tbody').html(rows);
+                            $('.d-flex.justify-content-center').html(response.pagination);
+
+                            // Update URL without page reload
+                            let newUrl = keyword ?
+                                `{{ route('anak.search') }}?keyword=${encodeURIComponent(keyword)}&page=${page}` :
+                                `{{ route('admin.dataanak') }}?page=${page}`;
+                            window.history.pushState({}, '', newUrl);
+                        },
+                        error: function () {
+                            $('tbody').html(`
                     <tr>
                         <td colspan="7" class="text-center py-4">
-                            <div class="text-muted">
-                                <i class="fas fa-inbox fa-3x mb-3"></i>
-                                <p class="mb-1">Data tidak ditemukan</p>
+                            <div class="text-danger">
+                                <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
+                                <p class="mb-1">Terjadi kesalahan</p>
+                                <p class="small">Silakan coba lagi</p>
                             </div>
                         </td>
                     </tr>
-                `;
+                `);
                         }
+                    });
+                }
 
-                        $('tbody').html(rows);
-                        $('.d-flex.justify-content-center').html(response.pagination);
-                    }
+                // === CLEAR SEARCH FUNCTIONALITY ===
+                $('#clearSearch').click(function () {
+                    $('#search').val('');
+                    performSearch('', 1); // Reset to show all data
+                });
+
+                // === BACK BUTTON SUPPORT ===
+                window.addEventListener('popstate', function (e) {
+                    let urlParams = new URLSearchParams(window.location.search);
+                    let keyword = urlParams.get('keyword') || '';
+                    let page = urlParams.get('page') || 1;
+
+                    $('#search').val(keyword);
+                    performSearch(keyword, page);
                 });
             });
-
+            // === REALTIME SEARCH WITH DEBOUNCING ===
     </script>
 @endsection
