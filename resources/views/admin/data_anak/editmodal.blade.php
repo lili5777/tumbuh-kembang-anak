@@ -13,19 +13,25 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="mb-3">
+                            <div class="mb-2">
                                 <label for="childName-{{ $anak->id }}" class="form-label">Nama Lengkap</label>
                                 <input type="text" class="form-control" id="childName-{{ $anak->id }}" name="nama"
                                     required placeholder="Masukkan nama lengkap anak" value="{{ $anak->nama }}">
                             </div>
-                            <div class="mb-3">
-                                <label for="usia_id-{{ $anak->id }}" class="form-label">Usia</label>
+                            <div class="mb-2">
                                 <select class="form-select" id="usia_id-{{ $anak->id }}" name="usia_id" required>
                                     <option value="" disabled>Pilih usia</option>
                                     @foreach ($usia as $item)
                                         <option value="{{ $item->id }}" {{ $item->id == $anak->usia_id ? 'selected' : '' }}>
                                             {{ $item->umur }}</option>
                                     @endforeach
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <select class="form-select" id="gender-{{ $anak->id }}" name="gender" required>
+                                    <option value="" disabled>Pilih jenis kelamin</option>
+                                    <option value="L" {{ $anak->gender == 'L' ? 'selected' : '' }}>Laki-laki</option>
+                                    <option value="P" {{ $anak->gender == 'P' ? 'selected' : '' }}>Perempuan</option>
                                 </select>
                             </div>
                         </div>

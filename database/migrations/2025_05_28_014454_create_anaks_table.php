@@ -16,6 +16,7 @@ return new class extends Migration
             // $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('nama');
             $table->foreignId('usia_id')->constrained('usias')->onDelete('cascade');
+            $table->enum('gender', ['L', 'P'])->default('L');
             $table->float('tb');
             $table->float('bb');
             $table->float('lk');

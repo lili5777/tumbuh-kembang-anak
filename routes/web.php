@@ -28,6 +28,8 @@ Route::post('proses_register', [AuthController::class, 'proses_register'])->name
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
     Route::get('/admin/data-anak', [AdminController::class, 'dataanak'])->name('admin.dataanak');
+    Route::get('/search-anak', [AdminController::class, 'search'])->name('anak.search');
+    Route::get('/search-knn', [AdminController::class, 'searchknn'])->name('knn.search');
     Route::get('/get-motorik/{usia_id}', [AdminController::class, 'getMotorik']);
     Route::get('/get-bicara/{usia_id}', [AdminController::class, 'getBicara']);
     Route::post('/admin/tambah-data-anak', [AdminController::class, 'tambahdataanak'])->name('admin.tambahdataanak');
@@ -38,6 +40,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/admin/proses-knn', [AdminController::class, 'prosesknn'])->name('admin.prosesknn');
     // In routes/web.php
     Route::get('/generate-report', [AdminController::class, 'generateReport'])->name('generate.report');
+    Route::get('/hasil-report', [AdminController::class, 'hasilReport'])->name('hasil.report');
 
     Route::get('/admin/data-knn', [AdminController::class, 'dataknnn'])->name('admin.dataknnn');
     Route::delete('/admin/hapus-data-knn/{id}', [AdminController::class, 'hapusdataknnn'])->name('admin.hapusdataknnn');

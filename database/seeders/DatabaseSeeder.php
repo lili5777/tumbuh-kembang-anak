@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             AnakSeeder::class,
             IndikatorSeeder::class,
             RekomendasiSeeder::class,
+            KNNSeeder::class,
         ]);
     }
 }

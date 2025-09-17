@@ -11,6 +11,7 @@ class DataKNN extends Model
     protected $fillable = [
         'nama',
         'usia_id',
+        'gender',
         'tb',
         'bb',
         'lk',
@@ -18,4 +19,9 @@ class DataKNN extends Model
         'bicara_id',
         'kategori'
     ];
+
+    public function usia()
+    {
+        return $this->belongsTo(Usia::class, 'usia_id');
+    }
 }

@@ -15,10 +15,11 @@ class AuthController extends Controller
     {
         // kita ambil data user lalu simpan pada variable $user
         $user = Auth::user();
+        // dd($user);
         // kondisi jika user nya ada 
         if ($user) {
             // jika user nya memiliki level admin
-            return route('admin.index');
+            return redirect()->route('admin.index');
         }
 
         return view('login');

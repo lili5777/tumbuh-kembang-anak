@@ -31,6 +31,43 @@ class AdminController extends Controller
         return view('admin.data_anak.index', compact('data', 'usia', 'motorik', 'bicara'));
     }
 
+    public function search(Request $request)
+    {
+        $keyword = $request->get('keyword');
+
+        $data = Anak::with('usia')
+            ->when($keyword, function ($query) use ($keyword) {
+                $query->where('nama', 'like', "%{$keyword}%");
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
+        // return JSON untuk AJAX
+        return response()->json([
+            'data' => $data->items(),
+            'pagination' => (string) $data->links('pagination::bootstrap-4')
+        ]);
+    }
+
+    public function searchknn(Request $request)
+    {
+        $keyword = $request->get('keyword');
+
+        $data = DataKNN::with('usia')
+            ->when($keyword, function ($query) use ($keyword) {
+                $query->where('nama', 'like', "%{$keyword}%");
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
+        // return JSON untuk AJAX
+        return response()->json([
+            'data' => $data->items(),
+            'pagination' => (string) $data->links('pagination::bootstrap-4')
+        ]);
+    }
+
+
     public function dataknnn()
     {
         $data = DataKNN::orderBy('created_at', 'desc')->paginate(10);
@@ -67,6 +104,7 @@ class AdminController extends Controller
         $data = $request->validate([
             'nama' => 'required|string|max:255',
             'usia_id' => 'required|exists:usias,id',
+            'gender' => 'required|in:L,P',
             'tb' => 'required|numeric',
             'bb' => 'required|numeric',
             'lk' => 'required|numeric',
@@ -241,6 +279,7 @@ class AdminController extends Controller
         $data = $request->validate([
             'nama' => 'required|string|max:255',
             'usia_id' => 'required|exists:usias,id',
+            'gender' => 'required|in:L,P',
             'tb' => 'required|numeric',
             'bb' => 'required|numeric',
             'lk' => 'required|numeric',
@@ -283,6 +322,7 @@ class AdminController extends Controller
         $request->validate([
             'nama' => 'required|string|max:255',
             'usia_id' => 'required|exists:usias,id',
+            'gender' => 'required|in:L,P',
             'tb' => 'required|numeric',
             'bb' => 'required|numeric',
             'lk' => 'required|numeric',
@@ -294,6 +334,7 @@ class AdminController extends Controller
         $newChild = new DataKNN();
         $newChild->nama = $request->nama;
         $newChild->usia_id = $request->usia_id;
+        $newChild->gender = $request->gender;
         $newChild->lk = $request->lk;
         $newChild->bb = $request->bb;
         $newChild->tb = $request->tb;
@@ -465,6 +506,30 @@ class AdminController extends Controller
         ];
 
         $pdf = Pdf::loadView('admin.report', $data);
+        return $pdf->download('laporan-knn-' . now()->format('YmdHis') . '.pdf');
+    }
+
+    public function hasilReport()
+    {
+        // Get all the KNN results from session
+        $knnResults = session('knn_results');
+
+        if (!$knnResults) {
+            return redirect()->back()->with('error', 'Tidak ada data hasil KNN yang tersedia');
+        }
+
+        $data = [
+            'newChild' => $knnResults['newChild'] ?? null,
+            'kValue' => $knnResults['kValue'] ?? null,
+            'distances' => $knnResults['distances'] ?? [],
+            'nearestNeighbors' => $knnResults['nearestNeighbors'] ?? [],
+            'votingResults' => $knnResults['votingResults'] ?? [],
+            'usia' => $knnResults['usia'] ?? collect(),
+            'kemampuan' => $knnResults['kemampuan'] ?? collect(),
+            'rekomendasi' => $knnResults['rekomendasi'] ?? null,
+        ];
+
+        $pdf = Pdf::loadView('admin.hasil', $data);
         return $pdf->download('laporan-knn-' . now()->format('YmdHis') . '.pdf');
     }
 }

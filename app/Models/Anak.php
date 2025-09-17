@@ -11,6 +11,7 @@ class Anak extends Model
     protected $fillable = [
         'nama',
         'usia_id',
+        'gender',
         'tb',
         'bb',
         'lk',
@@ -19,10 +20,10 @@ class Anak extends Model
         'kategori'
     ];
 
-    // public function usia()
-    // {
-    //     return $this->belongsTo(Usia::class, 'usia_id');
-    // }
+    public function usia()
+    {
+        return $this->belongsTo(Usia::class, 'usia_id');
+    }
 
 
 }

@@ -111,6 +111,7 @@
                     <tr>
                         <th>Nama</th>
                         <th>Usia</th>
+                        <th>Jenis Kelamin</th>
                         <th>Lingkar Kepala</th>
                         <th>Berat Badan</th>
                         <th>Tinggi Badan</th>
@@ -122,6 +123,7 @@
                     <tr>
                         <td>{{ $newChild->nama }}</td>
                         <td>{{ $usia->where('id', $newChild->usia_id)->first()->umur ?? '-' }}</td>
+                        <td>{{ $newChild->gender == 'L' ? 'Laki-laki' : 'Perempuan' }}</td>
                         <td>{{ $newChild->lk }} cm</td>
                         <td>{{ $newChild->bb }} kg</td>
                         <td>{{ $newChild->tb }} cm</td>

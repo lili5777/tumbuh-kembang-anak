@@ -21,6 +21,10 @@
                                 <div class="col-sm-4 ct">Umur:</div>
                                 <div class="col-sm-8 ct">{{ $usia->find($anak->usia_id)->umur }}</div>
                             </div>
+                            <div class="row mb-2">
+                                <div class="col-sm-4 ct">Jenis Kelamin:</div>
+                                <div class="col-sm-8 ct">{{ $anak->gender == 'L' ? 'Laki-laki' : 'Perempuan' }}</div>
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-6">
